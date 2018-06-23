@@ -181,8 +181,8 @@ class serv():
 
             self._kwa['proc_cb'] = progress_cb
 
-        b = bsc.dodat(**self._kwa)
-        self._datas['dat'], self._datas['ua']= b.gen_all()
+        self.b = bsc.dodat(**self._kwa)
+        self._datas['dat'], self._datas['ua']= self.b.gen_all()
 
         add_dumper(self)
 
@@ -196,6 +196,7 @@ class serv():
 
     def __stop (self):
         my_log("%s", "Stop server")
+        self.b.log_out()
         self._stop.set()
         self._server.shutdown()
         self._work.join()

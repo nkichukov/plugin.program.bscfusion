@@ -123,7 +123,7 @@ def add_mux(hts_conn, ch):
     r = hts_conn.post('%s/%s' % (url, create_mux), headers=_headers, data=_mux)
     if r.status_code != requests.codes.ok:
         print '%s\nError:\n%s' % (ch['mux_name'], r.content)
-        sys.exit('Error list chanels')
+        sys.exit('Error list channels')
     #else:
         #print 'Add: %s' % ch['mux_name']
 
@@ -134,13 +134,13 @@ def wait_mux(hts_conn):
         return len(r.json().get('entries', []))
     else:
         print 'Error: %s -> %d' % (r.url, r.status_code)
-        sys.exit('Error list chanels')
+        sys.exit('Error list channels')
 
 def add_tag(hts_conn, tag):
     r = hts_conn.post('%s/api/channeltag/list' % url, headers=_headers)
     if r.status_code != requests.codes.ok:
         print 'Error: %s -> %d' % (r.url, r.status_code)
-        sys.exit('Error list chanels')
+        sys.exit('Error list channels')
 
     for k in r.json().get('entries', []):
         if tag == k.get('val'):
@@ -149,7 +149,7 @@ def add_tag(hts_conn, tag):
     _n = {
             'enabled': True,
             'index': 0,
-            'name': tag,
+            'name': tag.encode('utf8'),
             'internal': False,
             'private': False,
             'icon': '',
@@ -159,7 +159,7 @@ def add_tag(hts_conn, tag):
     r = hts_conn.post('%s/api/channeltag/create' % url, headers=_headers, data={'conf' : json.dumps(_n)})
     if r.status_code != requests.codes.ok:
         print 'Error: %s -> %d' % (r.url, r.status_code)
-        sys.exit('Error list chanels')
+        sys.exit('Error list channels')
 
     r = hts_conn.post('%s/api/channeltag/list' % url, headers=_headers)
     if r.status_code != requests.codes.ok:
@@ -197,7 +197,7 @@ def epg_chanels_edit(hts_conn, bch):
     r = hts_conn.post('%s/api/channel/list' % url, headers=_headers)
     if r.status_code != requests.codes.ok:
         print 'Error: %s -> %d' % (r.url, r.status_code)
-        sys.exit('Error list epg/chanels')
+        sys.exit('Error list epg/channels')
 
     all_ch = r.json().get('entries', [])
     n = len(all_ch)
@@ -207,7 +207,7 @@ def epg_chanels_edit(hts_conn, bch):
                 r = hts_conn.post('%s/%s' % (url, load_node), headers=_headers, data={'uuid': ch['key'],'meta': 1})
                 if r.status_code != requests.codes.ok:
                     print 'Error: %s -> %d' % (r.url, r.status_code)
-                    sys.exit('Error list epg/chanels')
+                    sys.exit('Error list epg/channels')
 
                 for t in tag_list:
                     if t['val'] == x['tag']:
@@ -313,10 +313,10 @@ if __name__ == '__main__':
                         print 'Net created %s uuid %s' % (net_name, uuid)
                     else:
                         print 'Error: %s -> %d' % (r.url, r.status_code)
-                        sys.exit('Error list chanels')
+                        sys.exit('Error list channels')
                 else:
                     print 'Error: %s -> %d' % (r.url, r.status_code)
-                    sys.exit('Error list chanels')
+                    sys.exit('Error list channels')
 
             print 'Net %s uuid %s' % (net_name, uuid)
             r = hts_conn.post('%s/%s' % (url, load_mux), headers=_headers, data=grid_list)
@@ -327,7 +327,7 @@ if __name__ == '__main__':
                             print 'Skip: %s at %s' % (y['mux_name'], y['mux_url'])
                             in_list.remove(y)
             else:
-                sys.exit('Error list chanels')
+                sys.exit('Error list channels')
 
             num = len(in_list)
             #for ch in in_list[30:35]:
@@ -354,7 +354,7 @@ if __name__ == '__main__':
             epg_chanels_edit(hts_conn, lst_all)
         else:
             print 'Error: %s -> %d' % (r.url, r.status_code)
-            sys.exit('Error list chanels')
+            sys.exit('Error list channels')
     else:
         print 'Login Error:\n%s' % r.content
         sys.exit('Error list chanels')

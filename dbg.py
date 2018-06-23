@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
 
-import os, sys, json, re
+import os, sys, select, re
 import datetime, time
 from datetime import datetime, timedelta
 import requests
@@ -23,8 +23,6 @@ UA = {
 
 __resource__ = os.path.join(  os.getcwd(), 'resources', 'lib' )
 sys.path.insert(0, __resource__)
-
-usr, psw = os.getenv('BSCLOGIN', 'user:pass').split(':')
 
 def url_update_1(u):
   if re.match(r'^.*smil\:.*\.smil\?scheme=m3u8.*$', u):
@@ -147,17 +145,39 @@ def progress_cb (a):
             #)
   #b.gen_all(True)
 
+def get_input_timeout(t):
+  i, o, e = select.select([sys.stdin], [], [], float(t))
+
+  if (i):
+    return sys.stdin.readline().strip()
+  else:
+    return 'r'
+
+def cmd_get_dbg():
+  return raw_input("q - quit\nr - restart\n")
+
+def cmd_get():
+  if refreshtime:
+    time.sleep(600)
+    diff = (time.time() - last_runtime[0]) / 60.0
+    print 'Time check %f' % diff
+    if diff > float(refreshtime):
+      last_runtime[0] = time.time()
+      return "r"
+  else:
+   return raw_input("q - quit\nr - restart\n")
 
 def main():
+    last_runtime[0] = time.time()
     server.my_serv.start()
     try:
         while True:
-            ch = raw_input("q - quit\nr - restart\n")
-            print ch
-
-            if ch == "q":
+            c = cmd_get()
+            if c:
+              print c
+            if c == "q":
                 break;
-            if ch == "r":
+            if c == "r":
                 server.my_serv.restart()
     except KeyboardInterrupt:
         print "\nKeyboardInterrupt"
@@ -165,6 +185,11 @@ def main():
 
 def __log(fmt, data):
     print fmt % data
+
+usr, psw = os.getenv('BSCLOGIN', 'user:pass:60').split(':')
+refreshtime = os.getenv('BSCREFRESH', False)
+
+last_runtime = [0.0]
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

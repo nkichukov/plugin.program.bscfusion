@@ -1,0 +1,17 @@
+addon.xml
+changelog.txt
+ch_dump
+Dockerfile
+.dockerignore
+dumper
+epg_fetch
+fanart.jpg
+.git
+.gitignore
+icon.png
+LICENSE
+map_to_hts.py
+README.md
+resources/bulsat.png
+resources/language/*
+resources/settings.xml
